@@ -19,20 +19,8 @@ class PrayerTime(db.Model):
 with app.app_context():
     db.create_all()
 
-@app.route('/prayertimes', methods=['POST'])
-def add_prayer_time():
-    data = request.json
-    # Convert date string to date object
-    try:
-        data['date'] = datetime.strptime(data['date'], "%Y%m%d").date()
-    except Exception:
-        return jsonify({'error': 'Date must be in yyyymmdd format.'}), 400
-    pt = PrayerTime(**data)
-    db.session.add(pt)
-    db.session.commit()
-    return jsonify({'message': 'Prayer time added'}), 201
 
-@app.route('/prayertimes/<date>', methods=['GET'])
+@app.route('/<date>', methods=['GET'])
 def get_prayer_time_by_date(date):
     try:
         parsed_date = datetime.strptime(date, "%Y%m%d").date()
@@ -54,7 +42,7 @@ def get_prayer_time_by_date(date):
         'isha': pt.isha
     })
 
-@app.route('/prayertimes/range', methods=['GET'])
+@app.route('/range', methods=['GET'])
 def get_prayer_times_range():
     start = request.args.get('start')
     end = request.args.get('end')
@@ -78,5 +66,25 @@ def get_prayer_times_range():
         'isha': t.isha
     } for t in times])
 
+@app.route('/')
+def landing():
+    return """
+    <html>
+    <head><title>Prayer Times API for Edmonton, Alberta</title></head>
+    <body>
+        <h1>Prayer Times API</h1>
+        <h2>Quick Guide</h2>
+        <ul>
+            <li><b>GET /&lt;yyyymmdd&gt;</b> — Get prayer times for a specific date<br>
+                Example: <code>/api/20250809</code>
+            </li>
+            <li><b>GET /range?start=yyyymmdd&end=yyyymmdd</b> — Get prayer times for a date range<br>
+                Example: <code>/api/range?start=20250801&end=20250809</code>
+            </li>
+        </ul>
+        <p>All dates must be in <b>yyyymmdd</b> format.</p>
+    </body>
+    </html>
+    """
 if __name__ == '__main__':
     app.run(debug=True)
