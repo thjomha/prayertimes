@@ -98,6 +98,16 @@ def landing():
             </li>
         </ul>
         <p>All dates must be in <b>yyyymmdd</b> format.</p>
+        <h2>Athan Files</h2>
+        <ul>
+            <li><b>GET /athan</b> — List all available athan files.<br>
+                Example: <code>/api/athan</code>
+            </li>
+            <li><b>GET /athan/&lt;id&gt;</b> — Download a specific athan file by its ID.<br>
+                Example: <code>/api/athan/1</code>
+            </li>
+        </ul>
+        <p>Hosted by Taha Jomha</p>
     </body>
     </html>
     """
