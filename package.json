@@ -1,0 +1,23 @@
+{
+  "name": "prayer-times-api",
+  "version": "1.0.0",
+  "description": "A simple API to serve prayer times from a database.",
+  "main": "src/app.ts",
+  "scripts": {
+    "start": "ts-node src/app.ts",
+    "build": "tsc",
+    "dev": "ts-node-dev src/app.ts"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "typescript": "^4.5.4",
+    "ts-node": "^10.4.0",
+    "ts-node-dev": "^1.1.8",
+    "pg": "^8.7.1" // Assuming PostgreSQL for the database
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^16.11.7"
+  },
+  "license": "MIT"
+}
