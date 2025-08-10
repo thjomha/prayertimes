@@ -1,3 +1,5 @@
+import os
+from flask import send_from_directory, abort
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -15,10 +17,23 @@ class PrayerTime(db.Model):
     maghrib = db.Column(db.String)
     isha = db.Column(db.String)
 
+class AthanFile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String, unique=True, nullable=False)
+    description = db.Column(db.String, nullable=True)
+
 # Create tables before running the app
 with app.app_context():
     db.create_all()
 
+ATHAN_FOLDER = os.path.join(os.path.dirname(__file__), 'athans')
+
+@app.route('/athan/<int:athan_id>', methods=['GET'])
+def serve_athan_by_id(athan_id):
+    athan = AthanFile.query.get(athan_id)
+    if not athan:
+        abort(404)
+    return send_from_directory(ATHAN_FOLDER, athan.filename, as_attachment=True)
 
 @app.route('/<date>', methods=['GET'])
 def get_prayer_time_by_date(date):
@@ -86,5 +101,15 @@ def landing():
     </body>
     </html>
     """
+@app.route('/athan', methods=['GET'])
+def get_athan_files():
+    files = AthanFile.query.all()
+    return jsonify([
+        {
+            'id': f.id,
+            'filename': f.filename,
+            'description': f.description
+        } for f in files
+    ])
 if __name__ == '__main__':
     app.run(debug=True)
