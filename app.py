@@ -56,7 +56,22 @@ def get_prayer_time_by_date(date):
         'maghrib': pt.maghrib,
         'isha': pt.isha
     })
+@app.route('/today', methods=['GET'])
+def get_prayer_time_today():
+    today = datetime.now().date()
+    pt = PrayerTime.query.filter_by(date=today).first()
+    if not pt:
+        return jsonify({'error': 'No data for today.'}), 404
 
+    return jsonify({
+        'date': pt.date.strftime("%Y%m%d"),
+        'fajr': pt.fajr,
+        'sunrise': pt.sunrise,
+        'dhuhr': pt.dhuhr,
+        'asr': pt.asr,
+        'maghrib': pt.maghrib,
+        'isha': pt.isha
+    })
 @app.route('/range', methods=['GET'])
 def get_prayer_times_range():
     start = request.args.get('start')
@@ -91,10 +106,13 @@ def landing():
         <h2>Quick Guide</h2>
         <ul>
             <li><b>GET /&lt;yyyymmdd&gt;</b> — Get prayer times for a specific date<br>
-                Example: <code>/api/20250809</code>
+                Example: <code>/20250809</code>
+            </li>
+            <li><b>GET /today</b> — Get prayer times for today's date<br>
+                Example: <code>/today</code>
             </li>
             <li><b>GET /range?start=yyyymmdd&end=yyyymmdd</b> — Get prayer times for a date range<br>
-                Example: <code>/api/range?start=20250801&end=20250809</code>
+                Example: <code>/range?start=20250801&end=20250809</code>
             </li>
         </ul>
         <p>All dates must be in <b>yyyymmdd</b> format.</p>
