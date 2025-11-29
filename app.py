@@ -1,8 +1,10 @@
+#must run sudo systemctl restart prayertimes.service after git pull
 import os
 from flask import send_from_directory, abort
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from datetime import timedelta
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///prayertimes.db'
@@ -95,7 +97,31 @@ def get_prayer_times_range():
         'maghrib': t.maghrib,
         'isha': t.isha
     } for t in times])
+@app.route('/garbage', methods=['GET'])
+def garbage_schedule():
+    base_date = datetime(2025, 11, 24).date()
+    today = datetime.now().date()
 
+    base_week_start = base_date - timedelta(days=base_date.weekday())
+    this_week_start = today - timedelta(days=today.weekday())
+
+    weeks_elapsed = (this_week_start - base_week_start).days // 7
+
+    if weeks_elapsed % 2 == 0:
+        return "Garbage"
+    return "Garbage & Recycle"
+@app.route('/garbage/who', methods=['GET'])
+def garbage_who():
+    base_date = datetime(2025, 11, 24).date()
+    today = datetime.now().date()
+
+    base_week_start = base_date - timedelta(days=base_date.weekday())
+    this_week_start = today - timedelta(days=today.weekday())
+
+    weeks_elapsed = (this_week_start - base_week_start).days // 7
+
+    names = ["Muhammad", "Nadia", "Yasmeen"]
+    return names[weeks_elapsed % len(names)]
 @app.route('/')
 def landing():
     return """
